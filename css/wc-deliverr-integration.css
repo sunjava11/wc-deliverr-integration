@@ -1,0 +1,12 @@
+.woocommerce-shipping-methods {    
+  font-size: 13px !important;
+  text-align: left !important;
+}
+
+.woocommerce-shipping-methods li {
+  display: block !important;   
+}
+
+.price{
+  color: #000 !important;
+}
