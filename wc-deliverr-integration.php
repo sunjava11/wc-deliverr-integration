@@ -29,7 +29,12 @@ wp_enqueue_script('ars_fasttag_plugin_js', plugin_dir_url(__FILE__) . 'js/wc-del
     {
         global $product;
         $sku= $product->get_sku();
-
+ 		$price = $product->get_price();
+		$cart_amount = WC()->cart->cart_contents_total;
+			if(!$cart_amount)
+			{
+				$cart_amount=0;
+			}
         $sku_array = array($sku);
         $sku_array = json_encode($sku_array);
 
@@ -38,11 +43,14 @@ wp_enqueue_script('ars_fasttag_plugin_js', plugin_dir_url(__FILE__) . 'js/wc-del
         {
             $seller_id= isset($settings_delivrr["seller_id"])?"data-sellerid='".$settings_delivrr["seller_id"]."'":"";
             
+			
+			
+			
             ?>            
 	<style>
 		.dlvrtg10{width:65px !important}
 </style>
-                <deliverr-tag-extended data-price="25" data-cart-size="30" <?php echo $seller_id ?>  data-skus='<?php echo $sku_array;?>' ></deliverr-tag-extended> 
+                <deliverr-tag-extended data-price="<?php echo $price; ?>" data-cart-size="<?php echo $cart_amount;?>" <?php echo $seller_id ?>  data-skus='<?php echo $sku_array;?>' ></deliverr-tag-extended> 
             <?php
         }
         
@@ -60,7 +68,12 @@ function woo_show_excerpt_shop_page($add_to_cart_html, $product, $args)
 {
 		global $product;
         $sku= $product->get_sku();
-
+		$price = $product->get_price();
+		$cart_amount = WC()->cart->cart_contents_total;
+			if(!$cart_amount)
+			{
+				$cart_amount=0;
+			}
         $sku_array = array($sku);
         $sku_array = json_encode($sku_array);
 		$before="";
@@ -74,7 +87,7 @@ function woo_show_excerpt_shop_page($add_to_cart_html, $product, $args)
 			<style>
 		.dlvrtg10{width:65px !important}
 </style>
-                <deliverr-tag-extended  ".$seller_id."   data-skus='".$sku_array."' ></deliverr-tag-extended> 
+                <deliverr-tag-extended data-price='".$price."' data-cart-size='".$cart_amount."' ".$seller_id."   data-skus='".$sku_array."' ></deliverr-tag-extended> 
 			";
 	
             
