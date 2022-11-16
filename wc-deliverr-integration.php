@@ -12,13 +12,60 @@ require_once "ars-deliverr-api.php";
 require_once "ars-deliverr-shippping.php";
 
 
+$settings_delivrr = get_option("woocommerce_deliverr_settings");
+$seller_id="";
+
+if(isset($settings_delivrr["seller_id"]))
+{
+	$seller_id=$settings_delivrr["seller_id"];
+}
 
 wp_enqueue_style('ars_fasttag_css', plugin_dir_url(__FILE__) . 'css/wc-deliverr-integration.css',array("jquery"),time());
+wp_enqueue_script('ars_fasttag_plugin_js', plugin_dir_url(__FILE__) . 'js/wc-deliverr-integration.js',array("jquery"),time());
+wp_localize_script( 'ars_fasttag_plugin_js', 'DeliverrAPI',
+		array( 
+			'seller_id' => $seller_id
+		)
+	);
+
 wp_enqueue_script('ars_fast_tag_js', 'https://fast-tags.deliverr.com/web/main.js',array(),time());
-wp_enqueue_script('ars_fasttag_plugin_js', plugin_dir_url(__FILE__) . 'js/wc-deliverr-integration.js',array("ars_fast_tag_js","jquery"),time());
 
 
+function disable_shipping_calc_on_cart( $show_shipping ) {
+    if( is_cart() ) {
+        return false;
+    }
+    return $show_shipping;
+}
+add_filter( 'woocommerce_cart_ready_to_calc_shipping', 'disable_shipping_calc_on_cart', 99 );
 
+//add_action( 'woocommerce_before_shipping_calculator', 'wcdi_before_shipping_calc_cart_page');
+function wcdi_before_shipping_calc_cart_page()
+{
+ 		 $skus      = array(); // Initializing                    
+                    foreach ( WC()->cart->get_cart() as $cart_item )
+                    {
+                        
+                        $product = wc_get_product($cart_item["product_id"]);
+                        $skus[]=$product->get_sku();
+                    }
+
+        $settings_delivrr = get_option("woocommerce_deliverr_settings");
+        if(is_array($settings_delivrr) && isset($settings_delivrr["display_product_page"]) && $settings_delivrr["display_product_page"]=="yes")
+        {
+            $seller_id= isset($settings_delivrr["seller_id"])?"data-sellerid='".$settings_delivrr["seller_id"]."'":"";
+            
+            ?>            
+	<style>
+		.dlvrtg10{width:50px !important}
+		.woocommerce-shipping-destination{
+			display:none !important;
+		}
+</style>
+                <deliverr-tag-extended <?php echo $seller_id ?>  data-skus='<?php echo json_encode($skus);?>' ></deliverr-tag-extended> 
+            <?php
+        }
+}
 
 //if(wcdi_is_display_product_page())
 //{

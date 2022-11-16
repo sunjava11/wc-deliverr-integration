@@ -15,9 +15,11 @@ jQuery(document).ready(function(){
 	});
 });
 
-window.DeliverrFastTags = {
+window.DeliverrFastTags = {	
 	appConfig:{
 		cartMinimum:true,
-		sellerId: 'pleeplacegmailcom'
+		sellerId: DeliverrAPI.seller_id
 	}
 };
+
+console.log( DeliverrAPI.seller_id);
